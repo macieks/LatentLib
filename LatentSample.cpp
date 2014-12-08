@@ -72,7 +72,7 @@ LatentFunc( SleepSecsLatent )
 LatentFunc( SomeFuncLatent )
 {
 	LatentParam( int, result );
-	LatentParam( const vector< int >, a );
+	LatentParam( vector< int >, a );
 	LatentLocal( unsigned int, i );
 	LatentLocal( int, sum );
 

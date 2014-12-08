@@ -12,22 +12,10 @@
 
 namespace Latent
 {
-	class Type
-	{
-	public:
-		virtual ~Type() {}
-		virtual void Destruct( void* value ) = 0;
-	};
+	class Type {};
 
 	template < typename T >
-	class ActualType : public Type
-	{
-	public:
-		void Destruct( void* value )
-		{
-			static_cast< T* >( value )->~T();
-		}
-	};
+	class ActualType : public Type {};
 
 	template < typename T >
 	Type* GetType()
@@ -46,10 +34,7 @@ namespace Latent
 			: type( _type )
 		{}
 
-		~Var()
-		{
-			type->Destruct( this + 1 );
-		}
+		virtual ~Var() {}
 
 		void* GetValue()
 		{
@@ -67,6 +52,7 @@ namespace Latent
 	{
 	private:
 		T value;
+
 	public:
 		TypedVar( const T& _value )
 			: Var( Latent::GetType< T >() )
