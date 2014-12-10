@@ -57,7 +57,7 @@ const float g_deltaTime = 0.1f;
 
 LatentFunc( SleepSecsLatent )
 {
-	LatentLocal( float, secs );
+	LatentParam( float, secs );
 
 	LatentBegin();
 	LatentReturn( secs <= 0.0f );
