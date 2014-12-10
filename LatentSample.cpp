@@ -63,7 +63,7 @@ LatentFunc( SleepSecsLatent )
 	LatentReturn( secs <= 0.0f );
 	while ( 1 )
 	{
-        secs -= g_deltaTime;
+        	secs -= g_deltaTime;
 		LatentReturn( secs <= 0.0f );
 	}
 	LatentEnd();
@@ -123,7 +123,7 @@ void NonBlockingSample()
 
 	// Grab call result
 
-	const int result2 = call.GetParam< int >( 0 );
+	const int result = call.GetParam< int >( 0 );
 }
 
 // Main
