@@ -21,7 +21,7 @@ void SleepSecs( float secs )
 
 // Blocking sample
 
-int SomeFunc( const vector< int > a )
+int SomeFunc( const vector< int >& a )
 {
 	unsigned int i;
 	int sum;
