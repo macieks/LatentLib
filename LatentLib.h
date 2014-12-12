@@ -12,6 +12,8 @@
 
 namespace Latent
 {
+	// Simple type helpers
+
 	class Type {};
 
 	template < typename T >
@@ -24,29 +26,21 @@ namespace Latent
 		return &type;
 	}
 
+	//! Base variable: function parameter or local variable
 	class Var
 	{
-	private:
-		Type* type;
-
 	public:
-		Var( Type* _type )
-			: type( _type )
-		{}
-
 		virtual ~Var() {}
 
-		void* GetValue()
+		virtual Type* GetType() const = 0;
+
+		inline void* GetValue()
 		{
 			return this + 1;
 		}
-
-		Type* GetType() const
-		{
-			return type;
-		}
 	};
 
+	//! Typed variable capable of destructing stored variable
 	template < typename T >
 	class TypedVar : public Var
 	{
@@ -55,11 +49,16 @@ namespace Latent
 
 	public:
 		TypedVar( const T& _value )
-			: Var( Latent::GetType< T >() )
-			, value( _value )
+			: value( _value )
 		{}
+
+		virtual Type* GetType() const
+		{
+			return Latent::GetType< T >();
+		}
 	};
 
+	//! Stack frame coresponding with particular function call
 	class Frame
 	{
 	private:
@@ -98,6 +97,7 @@ namespace Latent
 		}
 	};
 
+	//! Full (nested) function call stack
 	class Stack
 	{
 	private:
@@ -193,10 +193,12 @@ namespace Latent
 		}
 	};
 
+	//! Helper class used to leave current stack frame on function return
 	class Scope
 	{
 	private:
 		Stack& stack;
+
 	public:
 		Scope( Stack& _stack )
 			: stack( _stack )
@@ -209,8 +211,10 @@ namespace Latent
 		}
 	};
 
+	//! User function signature
 	typedef bool (*Func)( Stack& stack );
 
+	//! User function call object
 	class Call
 	{
 	private:
@@ -244,6 +248,8 @@ namespace Latent
 	};
 };	// namespace Latent
 
+// Miscellaneous macros implementing latent function call functionality
+
 #define LatentFunc( name ) bool name( Latent::Stack& stack )
 
 #define LatentParam( type, name ) type& name = stack.GetNextVar< type >();
@@ -270,17 +276,19 @@ namespace Latent
 #define LatentCallPushParam( value ) stack.PushVar( value );
 
 #define LatentCallDo( func )			\
-	do { stack.SetState( __LINE__ );	\
-	case __LINE__:;						\
-	if ( !func( stack ) )				\
+	do									\
 	{									\
-		return false;					\
-	}									\
+		stack.SetState( __LINE__ );		\
+		case __LINE__:;					\
+		if ( !func( stack ) )			\
+		{								\
+			return false;				\
+		}								\
 	} while (0)
 
 #define LatentCallEnd() stack.PopFrame();
 
-// Convenience API for a 1-parameter latent function call
+// Convenience API for a special case of 1-parameter latent function call without return result
 
 #define LatentCallDo1Arg( func, param0 )	\
 	LatentCallBegin();						\
